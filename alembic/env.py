@@ -3,7 +3,7 @@ import os
 from logging.config import fileConfig
 
 from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import AsyncConnection, async_engine_from_config
 
 from alembic import context
 
@@ -22,7 +22,7 @@ config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
 target_metadata = Base.metadata
 
 
-def do_run_migrations(connection):
+def do_run_migrations(connection: AsyncConnection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,

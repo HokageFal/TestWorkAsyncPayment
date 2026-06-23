@@ -32,11 +32,11 @@ class Payment(Base):
     extra_data: Mapped[dict | None] = mapped_column(
         JSONB, nullable=True, name="metadata"
     )
-    status: Mapped[str] = mapped_column(
+    status: Mapped[PaymentStatus] = mapped_column(
         String(20), nullable=False, default=PaymentStatus.PENDING
     )
     idempotency_key: Mapped[str] = mapped_column(
-        String(255), nullable=False, unique=True
+        String(255), nullable=False
     )
     webhook_url: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
