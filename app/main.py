@@ -3,6 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+import app.http_client as _http_client_module
 from fastapi import FastAPI
 from httpx import AsyncClient
 
@@ -21,21 +22,16 @@ from app.workers.outbox_relay import run_outbox_relay
 
 logger = logging.getLogger(__name__)
 
-# Global http_client — consumer imports this after initialization
-http_client: AsyncClient | None = None
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    global http_client
-
     await broker.connect(url=str(settings.rabbitmq_url))
     await broker.declare_exchange(PAYMENTS_EXCHANGE)
     await broker.declare_exchange(DLQ_EXCHANGE)
     await broker.declare_queue(PAYMENTS_QUEUE)
     await broker.declare_queue(DLQ_QUEUE)
 
-    http_client = AsyncClient(timeout=10.0)
+    _http_client_module.http_client = AsyncClient(timeout=10.0)
 
     relay_task = asyncio.create_task(
         run_outbox_relay(AsyncSessionFactory, broker),
@@ -51,7 +47,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except (asyncio.CancelledError, asyncio.TimeoutError):
         pass
 
-    await http_client.aclose()
+    if _http_client_module.http_client is not None:
+        await _http_client_module.http_client.aclose()
     await broker.close()
     logger.info("Application stopped")
 

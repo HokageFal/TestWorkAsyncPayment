@@ -44,7 +44,8 @@ async def handle_payment(event: PaymentEvent) -> None:
     logger.error(
         "Payment %s failed after %d attempts", event.payment_id, _MAX_RETRIES
     )
-    raise last_exc  # type: ignore[misc]
+    assert last_exc is not None  # loop ran ≥ 1 iterations
+    raise last_exc
 
 
 async def _process(event: PaymentEvent) -> None:
@@ -69,8 +70,8 @@ async def _process(event: PaymentEvent) -> None:
 
     logger.info("Payment %s → %s", event.payment_id, new_status)
 
-    # Send webhook using the shared http_client from main
-    from app.main import http_client  # noqa: PLC0415
+    # Send webhook using the shared http_client
+    from app.http_client import http_client  # noqa: PLC0415
     if http_client is not None:
         from app.services.webhook import send_webhook  # noqa: PLC0415
         await send_webhook(

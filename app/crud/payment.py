@@ -41,7 +41,11 @@ async def create_payment(
     existing = await session.scalar(
         select(Payment).where(Payment.idempotency_key == idempotency_key)
     )
-    return existing, False  # type: ignore[return-value]
+    if existing is None:
+        raise RuntimeError(
+            f"Idempotency conflict but payment not found for key {idempotency_key!r}"
+        )
+    return existing, False
 
 
 async def get_payment_by_id(
