@@ -13,11 +13,6 @@ async def create_payment(
     data: PaymentCreate,
     idempotency_key: str,
 ) -> tuple[Payment, bool]:
-    """
-    Returns (payment, is_new).
-    is_new=False — duplicate by idempotency_key.
-    INSERT ON CONFLICT DO NOTHING — atomic, no separate SELECT.
-    """
     stmt = (
         pg_insert(Payment)
         .values(
@@ -62,11 +57,7 @@ async def update_payment_status_atomic(
     payment_id: uuid.UUID,
     new_status: PaymentStatus,
 ) -> bool:
-    """
-    Atomic update: UPDATE WHERE status=PENDING RETURNING id.
-    Returns True if updated, False if already processed.
-    Race condition protected — no separate SELECT.
-    """
+
     result = await session.execute(
         update(Payment)
         .where(Payment.id == payment_id, Payment.status == PaymentStatus.PENDING)

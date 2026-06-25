@@ -3,7 +3,7 @@ import logging
 import random
 import uuid
 
-from faststream.rabbit import AckPolicy
+from faststream.middlewares.acknowledgement.config import AckPolicy
 
 from app.broker.setup import PAYMENTS_EXCHANGE, PAYMENTS_QUEUE, broker
 from app.crud.payment import update_payment_status_atomic
@@ -89,4 +89,5 @@ async def _process(event: PaymentEvent) -> None:
 
 if __name__ == "__main__":
     import asyncio as _asyncio
-    _asyncio.run(broker.run())
+    from faststream import FastStream
+    _asyncio.run(FastStream(broker).run())

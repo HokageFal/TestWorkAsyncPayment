@@ -16,7 +16,6 @@ from app.broker.setup import (
     PAYMENTS_QUEUE,
     broker,
 )
-from app.core.config import settings
 from app.database import AsyncSessionFactory
 from app.workers.outbox_relay import run_outbox_relay
 
@@ -25,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    await broker.connect(url=str(settings.rabbitmq_url))
+    await broker.start()
     await broker.declare_exchange(PAYMENTS_EXCHANGE)
     await broker.declare_exchange(DLQ_EXCHANGE)
     await broker.declare_queue(PAYMENTS_QUEUE)
