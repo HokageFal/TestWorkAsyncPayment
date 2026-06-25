@@ -10,7 +10,7 @@ FastAPI · SQLAlchemy 2.0 async · PostgreSQL · RabbitMQ (FastStream) · Alembi
 
 ```bash
 cp .env.example .env
-docker-compose up -d --build
+docker-compose up --build
 ```
 
 Миграции применяются автоматически при старте сервиса `migrations`.

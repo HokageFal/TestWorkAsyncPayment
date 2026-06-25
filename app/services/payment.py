@@ -17,10 +17,6 @@ class PaymentService:
         data: PaymentCreate,
         idempotency_key: str,
     ) -> tuple[PaymentResponse, bool]:
-        """
-        Creates payment and outbox event in ONE transaction.
-        Returns (response, is_new).
-        """
         payment, is_new = await create_payment(
             self._session, data, idempotency_key
         )

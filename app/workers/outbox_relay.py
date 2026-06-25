@@ -16,9 +16,6 @@ async def run_outbox_relay(
     session_factory: async_sessionmaker[AsyncSession],
     broker: RabbitBroker,
 ) -> None:
-    """
-    Long-running background task. Cancelled via task.cancel() in lifespan.
-    """
     logger.info("Outbox relay started")
     while True:
         try:

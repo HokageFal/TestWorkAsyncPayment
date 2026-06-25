@@ -26,10 +26,6 @@ async def get_unpublished_events(
     session: AsyncSession,
     batch_size: int = 50,
 ) -> list[OutboxEvent]:
-    """
-    SELECT FOR UPDATE SKIP LOCKED — concurrent pollers skip locked rows.
-    Required for correct operation with multiple workers.
-    """
     result = await session.execute(
         select(OutboxEvent)
         .where(OutboxEvent.published.is_(False))

@@ -15,10 +15,6 @@ async def send_webhook(
     payload: dict,
     event_id: str,
 ) -> bool:
-    """
-    POST webhook with 3 attempts (1s → 2s → 4s backoff).
-    Returns True on success, False after all retries exhausted.
-    """
     last_exc: Exception | None = None
     for attempt, delay in enumerate(_RETRY_DELAYS, start=1):
         try:
