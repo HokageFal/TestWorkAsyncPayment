@@ -1,3 +1,5 @@
+import os
+
 from faststream.rabbit import RabbitBroker, RabbitExchange, RabbitQueue, ExchangeType
 
 
@@ -28,4 +30,6 @@ PAYMENTS_QUEUE = RabbitQueue(
     },
 )
 
-broker = RabbitBroker(url="")  # URL set in lifespan via broker.connect(url=settings.rabbitmq_url)
+broker = RabbitBroker(
+    url=os.environ.get("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/"),
+)
